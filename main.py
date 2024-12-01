@@ -1,16 +1,30 @@
-# This is a sample Python script.
+import sys
+from PyQt6.QtWidgets import QApplication, QWidget, QSplashScreen, QMainWindow
+from views.home_view import HomeView
+from PyQt6.QtGui import QPixmap
+from PyQt6.QtCore import Qt
+import time
 
-# Press Ctrl+F5 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+def main():
+    app = QApplication(sys.argv)
 
+    # Splash Screen
+    pixmap = QPixmap("images/splash.png")
+    splash = QSplashScreen(pixmap)
+    splash.setWindowFlag(Qt.WindowType.FramelessWindowHint)  # remove frame
+    splash.show()
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press F9 to toggle the breakpoint.
+    time.sleep(3)
 
+    splash.showMessage("Loading resources...", Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter,
+                       Qt.GlobalColor.white)
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+    home_view_window = HomeView()
+    home_view_window.show()
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    splash.finish(home_view_window) # close splash
+
+    sys.exit(app.exec())
+
+if __name__ == "__main__":
+    main()
