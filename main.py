@@ -1,5 +1,7 @@
 import sys
 from PyQt6.QtWidgets import QApplication, QWidget, QSplashScreen, QMainWindow
+
+from views.control_view import ControlView
 from views.home_view import HomeView
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtCore import Qt
@@ -19,7 +21,7 @@ def main():
     splash.showMessage("Loading resources...", Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter,
                        Qt.GlobalColor.white)
 
-    home_view_window = HomeView()
+    home_view_window = ControlView()
     home_view_window.show()
 
     splash.finish(home_view_window) # close splash
