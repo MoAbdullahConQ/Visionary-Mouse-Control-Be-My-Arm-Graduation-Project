@@ -1,6 +1,7 @@
 import sys
 from PyQt6.QtWidgets import QApplication, QWidget, QSplashScreen, QMainWindow
 
+from views.ai_pad_view import AIPadView
 from views.basic_pad_view import BasicPadView
 from views.control_view import ControlView
 from views.face_control_view import FaceControlView
@@ -27,7 +28,7 @@ def main():
     splash.showMessage("Loading resources...", Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter,
                        Qt.GlobalColor.white)
 
-    home_view_window = BasicPadView()
+    home_view_window = AIPadView()
     home_view_window.show()
 
     splash.finish(home_view_window) # close splash
