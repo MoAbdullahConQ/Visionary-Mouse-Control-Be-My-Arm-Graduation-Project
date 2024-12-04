@@ -69,7 +69,7 @@ class ControlView(QtWidgets.QWidget):
         self.button.setFont(QFont("Arial", 14, QFont.Weight.Bold))
         self.button.setGeometry(100, 100, 200, 50)
 
-        self.button.clicked.connect(lambda: self.parent.navigate_to_face_control())  # Navigate to FaceModelPage
+        self.button.clicked.connect(lambda: self.parent.navigate_to_face_control())  # Navigate to FaceControlView
 
 
         # Set button styling with the new gradient background
@@ -114,7 +114,7 @@ class ControlView(QtWidgets.QWidget):
         self.button2.setFont(QFont("Arial", 14, QFont.Weight.Bold))
         self.button2.setGeometry(100, 100, 200, 50)
 
-        self.button2.clicked.connect(lambda: self.parent.navigate_to_hand_control())  # Navigate to FaceModelPage
+        self.button2.clicked.connect(lambda: self.parent.navigate_to_hand_control())  # Navigate to FaceControlView
 
 
         # Set button styling with the new gradient background
