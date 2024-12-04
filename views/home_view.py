@@ -1,12 +1,4 @@
-# import QtWidgets
-# from libraries import *
-from PyQt6 import QtWidgets, QtGui, QtCore
-import math
-
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QPainter, QColor, QLinearGradient, QPen  # إذا كانت هذه الإشارات مفقودة
-from PyQt6.QtWidgets import QLabel
-
+from utils.libraries import *
 
 class HomeView(QtWidgets.QWidget):
     def __init__(self, parent=None):
@@ -25,7 +17,7 @@ class HomeView(QtWidgets.QWidget):
 
         # Add second image to overlay on top of the first image
         self.image_label2 = QtWidgets.QLabel(self)
-        pixmap2 = QtGui.QPixmap("F:\Graduation_Project\images\home.png")
+        pixmap2 = QtGui.QPixmap("images/home.png")
         if pixmap2.isNull():
             print("Image 2 failed to load! Check the path.")
         else:
