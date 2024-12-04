@@ -9,6 +9,9 @@ from PyQt6.QtGui import QPixmap
 from PyQt6.QtCore import Qt
 import time
 
+from views.virtual_pad_view import VirtualPadView
+
+
 def main():
     app = QApplication(sys.argv)
 
@@ -23,7 +26,7 @@ def main():
     splash.showMessage("Loading resources...", Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignCenter,
                        Qt.GlobalColor.white)
 
-    home_view_window = HandControlView()
+    home_view_window = VirtualPadView()
     home_view_window.show()
 
     splash.finish(home_view_window) # close splash
