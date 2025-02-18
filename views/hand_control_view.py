@@ -1,4 +1,10 @@
+import threading
+
+import cv2
+import mediapipe as mp
+
 from utils.libraries import *
+from models.hand.hand_mouse_control import detect_gesture
 
 
 
@@ -7,10 +13,11 @@ class HandControlView(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super().__init__()
         self.parent = parent
+        self.is_running = False  # إضافة متغير للتحكم في حالة التشغيل
+        self.hand_control_thread = None  # متغير لحفظ الـ thread
         self.init_ui()
 
     def init_ui(self):
-
         # Main Layout
         main_layout = QHBoxLayout(self)
         main_layout.setContentsMargins(40, 40, 40, 40)
@@ -56,14 +63,12 @@ class HandControlView(QtWidgets.QWidget):
 
 
         # Add custom spacer item for spacing
-        # spacer = QSpacerItem(5, 5, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
-        # left_content.addItem(spacer)
+        spacer = QSpacerItem(5, 5, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        left_content.addItem(spacer)
 
         # Description
         description_label = QLabel(
-            "With Face Control, experience a hands-\n\nfree way to navigate the app, "
-            "using simple\n\n facial expressions and head movements.\n\n"
-            "This innovative feature makes interaction \n\n effortless, accessible, and convenient."
+            "With Face Control, experience a \nhands-free way to navigate the \napp, using simple facial."
         )
         description_label.setFont(QFont("Arial", 14))
         description_label.setStyleSheet("color: white;")
@@ -72,40 +77,68 @@ class HandControlView(QtWidgets.QWidget):
         left_content.addWidget(description_label)
 
         # Add custom spacer item for spacing
-        # spacer = QSpacerItem(5, 5, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
-        # left_content.addItem(spacer)
+        spacer = QSpacerItem(5, 5, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        left_content.addItem(spacer)
 
 
         # Run/Stop Button
 
         # Button: "Run Now!"
-        run_button = QPushButton("Run Now! ...", self)
-        run_button.setGeometry(30, 550, 300, 50)  # X, Y, Width, Height
-        run_button.setStyleSheet(
+        self.run_button = QPushButton("Run Now! ...", self)
+        # self.run_button.setGeometry(30, 550, 300, 50)  # X, Y, Width, Height
+        self.run_button.setFixedSize(250, 50)  # عرض 250 وارتفاع 50
+
+        # إضافة الزر إلى تخطيط أفقي لتوسيطه
+        button_layout = QHBoxLayout()
+        # button_layout.addStretch(1)
+        button_layout.addWidget(self.run_button)
+        button_layout.addStretch(1)
+        left_content.addLayout(button_layout)
+        self.run_button.setStyleSheet(
             """
-            QPushButton {
-                background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1,
-                stop:0.3 #151b58,
-                stop:0.5 #C1D3F5,
-                stop:0.6 #151b58);
-                color: white;
-                font-size: 18px;
-                font-weight: bold;
-                border: none;
-                border-radius: 25px;
-            }
-            QPushButton:hover {
-                background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1,
-                stop:0.6 #151b58,
-                stop:0.5 #C1D3F5
-                stop:0.3 #151b58);
-            }
-            """
-        )
+           QPushButton {
+        background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0,
+            stop:0 #C1D3F5,
+            stop:1 #1A1E4D);
+        color: white;
+        font-size: 18px;
+        font-weight: bold;
+        border: none;
+        border-radius: 25px;
+        padding: 10px 20px;
+        
+       
+    }
+    
+    /* الصورة الثانية عند hover */
+    QPushButton:hover {
+        background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0,
+            stop:0.13 #5E8CAC,
+            stop:1 #2B4056);
+    }
+    
+        """)
+
+        # إضافة تأثير الظل للتوهج
+        glow = QGraphicsDropShadowEffect()
+        glow.setBlurRadius(30)
+        glow.setColor(QColor(193, 211, 245, 150))  # لون #C1D3F5 مع شفافية
+        glow.setOffset(0, 0)
+        self.run_button.setGraphicsEffect(glow)
+
+        # ربط الزر بالدالة
+        self.run_button.clicked.connect(self.toggle_hand_control)
+        left_content.addWidget(self.run_button)  # إضافة الزر إلى الـ layout
+
+        # Set main layout
+        main_layout.addLayout(left_content)
+        self.setLayout(main_layout)
+
+
 
 
         # Add some stretch at the bottom
-        left_content.addStretch()
+        # left_content.addStretch()
 
         # Add custom spacer item for spacing
         # spacer = QSpacerItem(5, 5, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
@@ -127,14 +160,73 @@ class HandControlView(QtWidgets.QWidget):
         # Uncomment the next line and replace 'video_path.mp4' with your video file path
         # self.media_player.setSource(QUrl.fromLocalFile("C:/Users/El2sr/Pictures/graduation project/WhatsApp Video 2024-11-14 at 01.10.54_39093217.mp4"))
 
-
         # Adding to the layout
-        main_layout.addLayout(left_content)
-        # main_layout.addWidget(video_frame)
+        # main_layout.addLayout(left_content)
+        # # main_layout.addWidget(video_frame)
+        #
+        # # Set Layout
+        # self.setLayout(main_layout)
 
-        # Set Layout
-        self.setLayout(main_layout)
+    def toggle_hand_control(self):
+        if not self.is_running:
+            self.is_running = True
+            self.run_button.setText("Stop")
+            self.hand_control_thread = threading.Thread(target=self.run_hand_control)
+            self.hand_control_thread.start()
+        else:
+            self.is_running = False
+            self.run_button.setText("Run Now! ...")
 
+    def run_hand_control(self):
+        mpHands = mp.solutions.hands
+        hands = mpHands.Hands(
+            static_image_mode=False,
+            model_complexity=1,
+            min_detection_confidence=0.7,
+            min_tracking_confidence=0.7,
+            max_num_hands=1
+        )
+
+        draw = mp.solutions.drawing_utils
+        cap = cv2.VideoCapture(0)
+
+        try:
+            while self.is_running and cap.isOpened():
+                ret, frame = cap.read()
+                if not ret:
+                    break
+                frame = cv2.flip(frame, 1)
+                frameRGB = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                processed = hands.process(frameRGB)
+
+                landmark_list = []
+                if processed.multi_hand_landmarks:
+                    hand_landmarks = processed.multi_hand_landmarks[0]
+                    draw.draw_landmarks(frame, hand_landmarks, mpHands.HAND_CONNECTIONS)
+                    for lm in hand_landmarks.landmark:
+                        landmark_list.append((lm.x, lm.y))
+
+                detect_gesture(frame, landmark_list, processed)
+
+                cv2.imshow('Hand Control', frame)
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    break
+        finally:
+            cap.release()
+            cv2.destroyAllWindows()
+
+    def paintEvent(self, event):
+        # Gradient background
+        painter = QPainter(self)
+        gradient = QLinearGradient(0, 0, 0, self.height())
+        gradient.setColorAt(0.0, QColor("#141727"))  # Dark blue at the top
+        gradient.setColorAt(1.0, QColor("#2C3262"))  # Dark pink at the bottom
+        painter.fillRect(self.rect(), gradient)
+
+        super().paintEvent(event)
 
     def go_back_home(self):
-        self.parent.navigate_to_page(1)  # Navigate back to HomePage
+        if self.is_running:
+            self.toggle_hand_control()
+        if self.parent:  # Check if the parent exists
+            self.parent.navigate_to_page(0)  # Navigate to the main (home) page (page index 0)
