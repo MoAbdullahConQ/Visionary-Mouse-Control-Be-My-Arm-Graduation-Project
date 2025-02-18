@@ -26,35 +26,33 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Control View")
-        self.setGeometry(100, 100, 1200, 800)  # تعديل الحجم حسب احتياجك
-        self.showMaximized()  # تكبير النافذة لتملأ الشاشة
+        self.setGeometry(100, 100, 1200, 800)
+        self.showMaximized()
 
-        # إنشاء StackedWidget للتنقل بين الصفحات
         self.stacked_widget = QStackedWidget()
         self.setCentralWidget(self.stacked_widget)
 
-        # إنشاء الصفحات
         self.control_view = ControlView(self)
         self.hand_control_view = HandControlView(self)
 
-        # إضافة الصفحات إلى StackedWidget
+        #  StackedWidget
         self.stacked_widget.addWidget(self.control_view)
         self.stacked_widget.addWidget(self.hand_control_view)
 
     def navigate_to_hand_control(self):
         self.stacked_widget.setCurrentWidget(self.hand_control_view)
-        self.setWindowTitle("Hand Control View")  # تحديث العنوان
+        self.setWindowTitle("Hand Control View")
 
     def navigate_to_control(self):
         self.stacked_widget.setCurrentWidget(self.control_view)
-        self.setWindowTitle("Control View")  # تحديث العنوان
+        self.setWindowTitle("Control View")
 
     def navigate_to_page(self, index):
         self.stacked_widget.setCurrentIndex(index)
         if index == 0:
-            self.setWindowTitle("Control View")  # تحديث العنوان
+            self.setWindowTitle("Control View")
         elif index == 1:
-            self.setWindowTitle("Hand Control View")  # تحديث العنوان
+            self.setWindowTitle("Hand Control View")  # تحديث العنوا
 
 
 def main():

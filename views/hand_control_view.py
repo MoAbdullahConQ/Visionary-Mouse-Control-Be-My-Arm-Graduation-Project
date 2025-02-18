@@ -86,9 +86,8 @@ class HandControlView(QtWidgets.QWidget):
         # Button: "Run Now!"
         self.run_button = QPushButton("Run Now! ...", self)
         # self.run_button.setGeometry(30, 550, 300, 50)  # X, Y, Width, Height
-        self.run_button.setFixedSize(250, 50)  # عرض 250 وارتفاع 50
+        self.run_button.setFixedSize(250, 50)
 
-        # إضافة الزر إلى تخطيط أفقي لتوسيطه
         button_layout = QHBoxLayout()
         # button_layout.addStretch(1)
         button_layout.addWidget(self.run_button)
@@ -119,16 +118,14 @@ class HandControlView(QtWidgets.QWidget):
     
         """)
 
-        # إضافة تأثير الظل للتوهج
         glow = QGraphicsDropShadowEffect()
         glow.setBlurRadius(30)
-        glow.setColor(QColor(193, 211, 245, 150))  # لون #C1D3F5 مع شفافية
+        glow.setColor(QColor(193, 211, 245, 150))
         glow.setOffset(0, 0)
         self.run_button.setGraphicsEffect(glow)
 
-        # ربط الزر بالدالة
         self.run_button.clicked.connect(self.toggle_hand_control)
-        left_content.addWidget(self.run_button)  # إضافة الزر إلى الـ layout
+        left_content.addWidget(self.run_button)
 
         # Set main layout
         main_layout.addLayout(left_content)

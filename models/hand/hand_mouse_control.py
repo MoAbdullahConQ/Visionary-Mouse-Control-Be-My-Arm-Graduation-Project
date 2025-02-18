@@ -12,7 +12,7 @@ import sys
 
 from utils import util
 
-sys.path.append(r'C:\Users\mouds\OneDrive\Desktop')
+# sys.path.append(r'C:\Users\mouds\OneDrive\Desktop')
 # import util
 import os
 from utils.util import *  # نضع سطر الاستيراد هنا
